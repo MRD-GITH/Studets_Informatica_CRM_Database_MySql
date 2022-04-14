@@ -1,0 +1,209 @@
+create database students_informatica;
+use students_informatica;
+create table country(country_id int(2) not null,country_name varchar(20) not null unique);
+alter table country
+add constraint country_pk
+primary key(country_id);
+create table state(state_id int(2) primary key,state_name varchar(30),country_id int(2),foreign key(country_id) references country(country_id));
+alter table state
+modify column state_name varchar(30) not null;
+create table city( city_id char(3) primary key,city_name varchar(30) not null,state_id int(2),foreign key(state_id) references state(state_id));
+create table enquiry_master(enquiry_id int(255) not null primary key,
+name varchar(255) not null,phone_no int(10) not null unique,email varchar(255),
+address varchar(255) not null,gender varchar(255) not null,age int(2) not null,
+working varchar(255),work_experience varchar(500),job_profile varchar(500),city_id char(3),
+foreign key(city_id) references city(city_id));
+create table source_master(source_id int(255) not null primary key,source_name varchar(300) not null unique);
+create table source_history(source_id int(255),enquiry_id int(255),source_date_of_enquiry date,foreign key(source_id)
+references source_master(source_id),foreign key(enquiry_id) references enquiry_master(enquiry_id));
+create table course(course_id int(255) not null primary key,course_name varchar(300) not null unique,fee int(255) not null);
+create table staff(staff_id int(255) not null primary key,staff_name varchar(255) not null);
+alter table staff add password varchar(20) check (password rlike'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).{8,}$');
+create table enquiry_handled(enquiry_id int(255) not null,assigned_date_to_staff date not null,handled_enquiry_date date not null,
+fee_suggested int(255) not null,staff_status varchar(255),enquiry_status varchar(255) not null,course_id int(255) not null,staff_id int(255) not null,
+visited_status varchar(255) not null,registered_status varchar(255) not null,close_date_of_enquiry date not null,
+close_enquiry_status varchar(255) not null,foreign key(enquiry_id) references enquiry_master(enquiry_id),
+foreign key(course_id) references course(course_id),foreign key(staff_id) references staff(staff_id));
+create table follow_up(followup_id int(255) not null primary key,staff_id int(255) not null,
+enquiry_id int(255) not null,status varchar(255) not null,date_of_followup date not null,
+remark varchar(500),next_followup_date date,foreign key(staff_id) references staff(staff_id),
+foreign key(enquiry_id) references enquiry_master(enquiry_id));
+create table college(college_id int(255) not null primary key,college_name varchar(255) not null);
+create table qualification(qid int(255) not null primary key,degree_name varchar(255) not null);
+create table stream(stream_id int(255) not null primary key,stream_name varchar(255) not null);
+create table college_sem(sem_id int(255) not null primary key,sem_name varchar(255) not null unique);
+create table college_year(year_id int(255),year_name varchar(255) not null unique);
+alter table college_year
+add constraint year_id_pk
+primary key(year_id);
+create table college_history(enquiry_id int(255) not null,college_id int(255) not null,
+date_of_change date not null,sem_id int(255) not null,year_id int(255) not null,
+qid int(255) not null,stream_id int(255) not null,primary key(enquiry_id,college_id),foreign key(enquiry_id) references enquiry_master(enquiry_id),
+foreign key(college_id) references college(college_id),foreign key(sem_id) references college_sem(sem_id),
+foreign key(year_id) references college_year(year_id),foreign key(qid) references qualification(qid),
+foreign key(stream_id) references stream(stream_id));
+insert into country values('1','India');
+insert into country values('2','Pakistan');
+insert into country values('3','Shri Lanka');
+insert into country values('4','Bangladesh');
+insert into country values('5','Nepal');
+insert into country values('6','Bhutan');
+insert into state values('10','maharastra','1');
+insert into state values('11','goa','1');
+insert into state values('12','kerala','1');
+insert into state values('13','madhya pradesh','1');
+insert into state values('14','gujrat','1');
+insert into state values('20','sindh','2');
+insert into state values('21','khyber pakhtunkwha','2');
+insert into state values('30','easten province','3');
+insert into state values('31','uva','3');
+insert into state values('40','dhaka','4');
+insert into state values('41','chittagong','4');
+insert into state values('50','lumbini','5');
+insert into state values('51','karnali','5');
+insert into city values('ngp','nagpur','10');
+insert into city values('mbi','mumbai','10');
+insert into city values('pne','pune','10');
+insert into city values('nsk','nashik','10');
+insert into city values('avt','amravati','10');
+insert into city values('pnj','panaji','11');
+insert into city values('mgo','margao','11');
+insert into city values('knr','kannur','12');
+insert into city values('klm','kollam','12');
+insert into city values('bhl','bhopal','13');
+insert into city values('rsn','raisen','13');
+insert into city values('srt','surat','14');
+insert into city values('vda','vadodara','14');
+insert into city values('pbr','porbandar','14');
+insert into city values('skr','shikarpur','20');
+insert into city values('skk','sukkur','20');
+insert into city values('mna','manshera','21');
+insert into city values('sna','shangla','21');
+insert into city values('apa','ampara','30');
+insert into city values('bta','batticaloa','30');
+insert into city values('tme','trincomalee','30');
+insert into city values('bda','badulla','31');
+alter table enquiry_master
+modify column work_experience int(255);
+alter table enquiry_master
+modify column phone_no bigint(20);
+insert into enquiry_master values('1001','mrudul','9325481444',
+'mrudul1@email.com','near id center,mahal','male','23','yes','1','data analyst','ngp');
+insert into enquiry_master values('1002','saurabh','9123456789',
+'saurabh2@email.com','near it park,mihan','male','34','yes','34','senior data analyst','ngp');
+insert into enquiry_master values('1003','saloni','919990000',
+'saloni3@email.com','behind galaxy park,bandra','female','22','no','0','senior data analyst','ngp');
+update enquiry_master
+set work_experience='6'
+where enquiry_id=1002;
+update enquiry_master
+set job_profile='null'
+where enquiry_id=1003;
+insert into enquiry_master values('1004','hemant','913330000',
+'hemant4@email.com','civil lines,near ram temple','male','27','yes','2','ui engineer','bhl');
+update enquiry_master
+set city_id='mbi'
+where enquiry_id=1003;
+update enquiry_master
+set job_profile='0'
+where enquiry_id=1003;
+insert into enquiry_master values('1005','shubham','9151510000',
+'shubham5@email.com','skyhigh apartment,flat no-676','male','24','no','0','no','pnj');
+insert into enquiry_master values('1006','kiara','913330001',
+'kiara6@email.com','rockers apartment,flat no-766','female','21','no','0','0','tme');
+update enquiry_master
+set job_profile='0'
+where enquiry_id=1005;
+update enquiry_master
+set phone_no='9199990000'
+where enquiry_id=1003;
+update enquiry_master
+set phone_no='9133330000'
+where enquiry_id=1004;
+update enquiry_master
+set phone_no='9133330001'
+where enquiry_id=1006;
+alter table course
+modify column fee bigint(255) not null;
+insert into course values('7070','Data Analytics','55000');
+insert into course values('7071','Data science','75000');
+insert into course values('7072','Computer science','95000');
+insert into course values('7073','Mechatronics','95000');
+insert into staff values('5050','Dilip');
+insert into staff values('5050','Dilip');
+insert into staff values('5051','Avni');
+insert into staff values('5052','Varun');
+insert into staff values('5053','Gauri');
+update staff set password='Dilip@120' where staff_id='5050';
+update staff set password='Avni@121' where staff_id='5051';
+update staff set password='Varun@122' where staff_id='5052';
+update staff set password='Gauri@123' where staff_id='5053';
+insert into college values('3121','Rsne college');
+insert into college values('4122','DB college,nagpur');
+insert into college values('2122',' Dm institutions');
+insert into college values('3133','Jd college,nagpur');
+insert into enquiry_handled values('1001','2019-08-18','2019-08-18','55000','Assigned','Closed','7070','5051','Yes','Yes','2019-08-21','manual');
+insert into enquiry_handled values('1002','2019-08-11','2019-08-11','75000','Assigned','Closed','7071','5052','Yes','Yes','2019-08-20','manual');
+insert into enquiry_handled values('1003','2019-08-16','2019-08-17','95000','Assigned','Closed','7072','5053','Yes','Yes','2019-08-19','manual');
+insert into enquiry_handled values('1003','2019-07-16','2019-07-16','95000','Assigned','Closed','7072','5050','Yes','No','2019-07-19','manual');
+delete from enquiry_handled where registered_status='No';
+insert into enquiry_handled values('1004','2019-07-16','2019-07-16','95000','Assigned','Closed','7072','5050','Yes','No','2019-07-19','manual');
+insert into enquiry_handled values('1005','2019-07-16','2019-07-18','75000','Assigned','Closed','7071','5051','No','No','2019-07-19','manual');
+insert into qualification values('14551','Bachelor of Engineering');
+insert into qualification values('15551','Bachelor of Commerce');
+insert into qualification values('16661','Bachelor of Computer Applications');
+insert into qualification values('17771','Diploma in Computer Science');
+insert into qualification values('17772','Diploma in Mechanical Engineering');
+alter table follow_up
+modify column followup_id int(255) auto_increment;
+insert into follow_up values('1','5050','1001','7 days left','2019-08-18','convinced for admission','2019-08-19');
+insert into follow_up values('2','5052','1002','7 days left','2019-08-18','convinced for admission','2019-08-19');
+delete from follow_up where followup_id='1';
+delete from follow_up where followup_id='2';
+insert into follow_up values('1','5051','1001','7 days left','2019-08-18','convinced for admission','2019-08-19');
+insert into follow_up values('2','5052','1001','7 days left','2019-08-18','convinced for admission','2019-08-19');
+delete from follow_up where followup_id='2';
+insert into follow_up values('2','5052','1002','7 days left','2019-08-11','convinced for admission','2019-08-16');
+insert into follow_up(staff_id,enquiry_id,status,date_of_followup,remark,next_followup_date) values
+('5053','1003','6 days left','2019-08-17','convinced for admission','2019-08-18'),
+('5050','1004','7 days left','2019-08-17','fee is not convincible to the candidate','2019-08-19');
+insert into follow_up(staff_id,enquiry_id,status,date_of_followup,remark,next_followup_date) values
+('5053','1005','5 days left','2019-08-18','course timing is not comfortable to student','2019-08-18');
+delete from follow_up where followup_id='5';
+insert into follow_up(staff_id,enquiry_id,status,date_of_followup,remark,next_followup_date) values
+('5051','1005','5 days left','2019-08-18','course timing is not comfortable to student','2019-08-18');
+delete from follow_up where followup_id='6';
+insert into follow_up(followup_id,staff_id,enquiry_id,status,date_of_followup,remark,next_followup_date) values
+('5','5051','1005','5 days left','2019-08-18','course timing is not comfortable to student','2019-08-18');
+alter table college_history
+modify date_of_change date null;
+insert into stream values('1','science');
+insert into stream values('2','humanities');
+insert into stream values('3','commerce');
+insert into stream values('4','engineering');
+insert into college_sem values('1','First Sem');
+insert into college_sem values('2','Second Sem');
+insert into college_sem values('3','Third Sem');
+insert into college_sem values('4','Fourth Sem');
+insert into college_sem values('5','Fifth Sem');
+insert into college_sem values('6','Sixth Sem');
+insert into college_sem values('7','Seventh Sem');
+insert into college_sem values('8','Eighth Sem');
+insert into college_year values('1','First Year');
+insert into college_year values('2','Second Year');
+insert into college_year values('3','Third Year');
+insert into college_year values('4','Fourth Year');
+insert into college_history values('1001','3121','0-0-0','8','4','14551','4');
+insert into college_history values('1002','3133','0-0-0','8','4','14551','4');
+insert into college_history values('1003','2122','0-0-0','6','3','17771','4');
+insert into college_history values('1004','2122','0-0-0','8','4','14551','4');
+insert into college_history values('1005','4122','0-0-0','8','4','14551','4');
+insert into source_master values('1','social media');
+insert into source_master values('2','internet');
+insert into source_master values('3','youtube');
+insert into source_master values('4','print media');
+insert into source_history values('4','1001','2019-08-16');
+insert into source_history values('2','1002','2019-08-10');
+insert into source_history values('1','1003','2019-08-16');
+insert into source_history values('1','1004','2019-07-15');
+insert into source_history values('3','1005','2019-07-15');
